@@ -4,7 +4,7 @@ blueprint:
     Creates a virtual multi-way switch configuration (3-way, 4-way, 5-way, etc.) where multiple 
     switches/lights can control each other. When any switch changes state, all others will match that state.
   domain: automation
-  source_url: https://github.com/dev-vinicius-andrade/home-assistant/blob/main/config/blueprints/automation/dev-vinicius-andrade/virtual_multi_way_switch_new.yaml
+  source_url: https://github.com/dev-vinicius-andrade/home-assistant/blob/main/config/blueprints/automation/dev-vinicius-andrade/virtual_multi_way_switch_fixed.yaml
   input:
     group_entities:
       name: Select Switches/Lights
