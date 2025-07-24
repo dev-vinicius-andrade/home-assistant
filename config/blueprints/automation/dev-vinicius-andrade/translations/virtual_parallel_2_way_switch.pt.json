@@ -1,0 +1,14 @@
+{
+  "title": "Interruptor Virtual de 2 Vias (Paralelo)",
+  "description": "Alterna todos os interruptores/luzes selecionados juntos quando qualquer um deles muda de estado.",
+  "data": {
+    "group_entities": {
+      "name": "Selecionar Luzes ou Interruptores",
+      "description": "Escolha os interruptores ou luzes que devem se comportar como um grupo."
+    },
+    "delay_seconds": {
+      "name": "Atraso (Opcional)",
+      "description": "Atraso em segundos entre mudanças de estado (para evitar loops)."
+    }
+  }
+}

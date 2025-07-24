@@ -1,0 +1,4 @@
+{
+  "title": "Virtual 2-Way Switch (Parallel)",
+  "description": "Toggles all selected switches/lights together when any of them change state."
+}

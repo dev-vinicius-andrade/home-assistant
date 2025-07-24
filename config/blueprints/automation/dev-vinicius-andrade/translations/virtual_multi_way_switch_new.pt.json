@@ -1,0 +1,4 @@
+{
+  "title": "Interruptor Virtual de Múltiplas Vias",
+  "description": "Cria uma configuração de interruptor virtual de múltiplas vias (3 vias, 4 vias, 5 vias, etc.) onde vários interruptores/luzes podem controlar uns aos outros. Quando qualquer interruptor muda de estado, todos os outros corresponderão a esse estado."
+}

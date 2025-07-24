@@ -1,0 +1,85 @@
+blueprint:
+  name: !input title
+  description: !input description
+  domain: automation
+  source_url: https://github.com/dev-vinicius-andrade/home-assistant/blob/main/config/blueprints/automation/dev-vinicius-andrade/virtual_parallel_2_way_switch_new.yaml
+  input:
+    title:
+      name: Name
+      description: The name of this automation
+      default: Virtual 2-Way Switch (Parallel)
+      selector:
+        text:
+    description:
+      name: Description
+      description: Description of this automation
+      default: Toggles all selected switches/lights together when any of them change state.
+      selector:
+        text:
+    group_entities:
+      name: Select Lights or Switches
+      description: Choose the switches or lights that should behave as a group.
+      selector:
+        entity:
+          domain:
+            - switch
+            - light
+            - input_boolean
+          multiple: true
+    delay_seconds:
+      name: Delay (Optional)
+      description: Delay in seconds between state changes (to prevent loops).
+      default: 1
+      selector:
+        number:
+          min: 0
+          max: 5
+          step: 0.1
+          unit_of_measurement: seconds
+
+trigger:
+  platform: state
+  entity_id: !input group_entities
+  to:
+    - "on" 
+    - "off"
+
+variables:
+  group_entities: !input group_entities
+  triggering_entity: "{{ trigger.entity_id }}"
+  target_state: "{{ trigger.to_state.state }}"
+  # Create a filtered list of entities to update (all except the triggering one)
+  entities_to_update: >-
+    {% set to_update = [] %}
+    {% for entity in group_entities %}
+      {% if entity != triggering_entity %}
+        {% set to_update = to_update + [entity] %}
+      {% endif %}
+    {% endfor %}
+    {{ to_update }}
+
+action:
+  # Only proceed if there are entities to update and state is valid
+  - condition: template
+    value_template: >-
+      {{ 
+        entities_to_update|count > 0 and 
+        (target_state == "on" or target_state == "off")
+      }}
+  
+  # Turn all other entities to match the state of the triggering entity
+  - service: >
+      {% if target_state == "on" %}
+        homeassistant.turn_on
+      {% elif target_state == "off" %}
+        homeassistant.turn_off
+      {% endif %}
+    target:
+      entity_id: "{{ entities_to_update }}"
+
+  # Add a small delay to prevent rapid-fire toggling
+  - delay:
+      seconds: !input delay_seconds
+
+mode: single
+max_exceeded: silent

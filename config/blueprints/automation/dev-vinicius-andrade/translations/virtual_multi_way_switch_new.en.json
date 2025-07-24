@@ -1,0 +1,4 @@
+{
+  "title": "Virtual Multi-Way Switch",
+  "description": "Creates a virtual multi-way switch configuration (3-way, 4-way, 5-way, etc.) where multiple switches/lights can control each other. When any switch changes state, all others will match that state."
+}
