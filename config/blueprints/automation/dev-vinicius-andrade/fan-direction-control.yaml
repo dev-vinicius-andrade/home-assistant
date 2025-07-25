@@ -1,0 +1,30 @@
+blueprint:
+  name: Fan Direction Control
+  description: >-
+    Controls fan direction (forward/reverse) for SmartLife fans.
+  domain: automation
+  input:
+    fan_entity:
+      name: Fan Entity
+      description: Select the fan entity to control
+      selector:
+        entity:
+          domain: fan
+    direction:
+      name: Fan Direction
+      description: Select the fan direction
+      default: "forward"
+      selector:
+        select:
+          options:
+            - label: "Forward"
+              value: "forward"
+            - label: "Reverse"
+              value: "reverse"
+
+action:
+  - service: fan.set_direction
+    target:
+      entity_id: !input fan_entity
+    data:
+      direction: !input direction

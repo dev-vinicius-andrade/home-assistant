@@ -1,0 +1,80 @@
+blueprint:
+  name: Fan Speed Control
+  description: >-
+    Controls fan speed using specific percentage values customized for SmartLife fans.
+    Supports 5 speed levels (0%, 25%, 50%, 75%, 100%) with their corresponding percentage values.
+  domain: automation
+  input:
+    fan_entity:
+      name: Fan Entity
+      description: Select the fan entity to control
+      selector:
+        entity:
+          domain: fan
+    speed_level:
+      name: Speed Level
+      description: Select the desired speed level
+      default: "50"
+      selector:
+        select:
+          options:
+            - label: "Off (0%)"
+              value: "0"
+            - label: "Low (25%)"
+              value: "25"
+            - label: "Medium (50%)"
+              value: "50"
+            - label: "High (75%)"
+              value: "75"
+            - label: "Max (100%)"
+              value: "100"
+
+action:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ speed_level == '0' }}"
+        sequence:
+          - service: fan.turn_off
+            target:
+              entity_id: !input fan_entity
+      - conditions:
+          - condition: template
+            value_template: "{{ speed_level == '25' }}"
+        sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: !input fan_entity
+            data:
+              percentage: 416
+      - conditions:
+          - condition: template
+            value_template: "{{ speed_level == '50' }}"
+        sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: !input fan_entity
+            data:
+              percentage: 833
+      - conditions:
+          - condition: template
+            value_template: "{{ speed_level == '75' }}"
+        sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: !input fan_entity
+            data:
+              percentage: 1250
+      - conditions:
+          - condition: template
+            value_template: "{{ speed_level == '100' }}"
+        sequence:
+          - service: fan.set_percentage
+            target:
+              entity_id: !input fan_entity
+            data:
+              percentage: 1666
+    default:
+      - service: fan.turn_off
+        target:
+          entity_id: !input fan_entity

@@ -1,0 +1,79 @@
+blueprint:
+  name: Fan Speed Increment/Decrement
+  description: >-
+    Increases or decreases fan speed by one level, using specific percentage values 
+    customized for SmartLife fans. Supports 5 speed levels with their corresponding values.
+  domain: automation
+  input:
+    fan_entity:
+      name: Fan Entity
+      description: Select the fan entity to control
+      selector:
+        entity:
+          domain: fan
+    action_type:
+      name: Action Type
+      description: Increase or decrease the fan speed
+      default: "increase"
+      selector:
+        select:
+          options:
+            - label: "Increase Speed"
+              value: "increase"
+            - label: "Decrease Speed"
+              value: "decrease"
+    percentage_increment:
+      name: Percentage Increment
+      description: The percentage to increase or decrease by (default is 25%)
+      default: 25
+      selector:
+        number:
+          min: 25
+          max: 100
+          step: 25
+          unit_of_measurement: "%"
+
+action:
+  - variables:
+      speed_values:
+        "0": 16
+        "25": 416
+        "50": 833
+        "75": 1250
+        "100": 1666
+      speed_levels: ["0", "25", "50", "75", "100"]
+      current_percentage: "{{ state_attr(fan_entity, 'percentage') | int }}"
+  - variables:
+      current_level_index: >-
+        {% set closest_idx = 0 %}
+        {% set min_diff = 9999 %}
+        {% for level in speed_levels %}
+          {% set diff = (speed_values[level] - current_percentage) | abs %}
+          {% if diff < min_diff %}
+            {% set min_diff = diff %}
+            {% set closest_idx = loop.index0 %}
+          {% endif %}
+        {% endfor %}
+        {{ closest_idx }}
+  - variables:
+      new_level_index: >-
+        {% if action_type == 'increase' %}
+          {{ [current_level_index + 1, 4] | min }}
+        {% else %}
+          {{ [current_level_index - 1, 0] | max }}
+        {% endif %}
+      new_level: "{{ speed_levels[new_level_index] }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ new_level == '0' }}"
+        sequence:
+          - service: fan.turn_off
+            target:
+              entity_id: !input fan_entity
+    default:
+      - service: fan.set_percentage
+        target:
+          entity_id: !input fan_entity
+        data:
+          percentage: "{{ speed_values[new_level] }}"
